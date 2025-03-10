@@ -1,25 +1,26 @@
 package mongo_client
 
 import (
+	"message/config"
+
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
-
 )
 
 
 type MongoClient struct {
-	db *mongo.Database
+	Db *mongo.Database
 }
 
-func NewMongoClient(host string) (*MongoClient, error) {
+func NewMongoClient(mongoConfig config.MongoConfig) (*MongoClient, error) {
 	opts_auth := options.Credential{
-		Username: "username",
-		Password: "password",
+		Username: mongoConfig.Username,
+		Password: mongoConfig.Password,
 	}
-	client_opts := options.Client().SetAuth(opts_auth).SetHosts([]string{host})
+	client_opts := options.Client().SetAuth(opts_auth).SetHosts([]string{mongoConfig.Host})
 	client, err := mongo.Connect(client_opts)
 	if err != nil {
 		return nil, err
 	}
-	return &MongoClient{db: client.Database("beep")}, nil
+	return &MongoClient{Db: client.Database(mongoConfig.Database)}, nil
 }

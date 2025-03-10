@@ -17,7 +17,7 @@ func NewMessageRouter(controller controller.MessageController) MessageRouter {
 }
 
 func (r *MessageRouter) RegisterRoutes(router *gin.RouterGroup) {
-	router.GET("/messages", r.controller.GetMessages)
+	router.GET("/messages/:id", r.controller.GetMessage)
 	// Mget
 	router.POST("/messages/batch", r.controller.GetMessages)
 	router.POST("/messages", r.controller.CreateMessage)

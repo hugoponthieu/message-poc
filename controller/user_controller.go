@@ -30,6 +30,7 @@ func NewMessageController(messageService service.MessageService) MessageControll
 // @Failure 404 {object} ErrorResponse
 // @Router /messages/{id} [get]
 func (c *MessageController) GetMessage(ctx *gin.Context) {
+	println("message")
 	id := ctx.Param("id")
 	msg, err := c.service.Get(id)
 	if err != nil {
