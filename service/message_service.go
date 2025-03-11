@@ -28,6 +28,10 @@ func (s MessageService) Create(message *message.Message) (*message.Message, erro
 	return s.repository.Create(message)
 }
 
+func (s MessageService) MCreate(messages []*message.Message) error {
+	return s.repository.MCreate(messages)
+}
+
 func (s MessageService) Update(id string, message *message.UpdateMessage) (*message.Message, error) {
 	return s.repository.Update(id, message)
 }

@@ -14,11 +14,11 @@ import (
 
 type App struct {
 	config            config.AppConfig
-	messageRouter     router.MessageRouter
-	messageService    service.MessageService
-	messageController controller.MessageController
-	messageRepository repository.MessageRepository
-	mongo             mongo_client.MongoClient
+	MessageRouter     router.MessageRouter
+	MessageService    service.MessageService
+	MessageController controller.MessageController
+	MessageRepository repository.MessageRepository
+	Mongo             mongo_client.MongoClient
 }
 
 func InitApp(appConfig config.AppConfig) (*App, error) {
@@ -34,17 +34,17 @@ func InitApp(appConfig config.AppConfig) (*App, error) {
 
 	return &App{
 		config:            appConfig,
-		messageRouter:     messageRouter,
-		messageService:    messageService,
-		messageController: messageController,
-		messageRepository: messageRepository,
-		mongo:             *mongo_client,
+		MessageRouter:     messageRouter,
+		MessageService:    messageService,
+		MessageController: messageController,
+		MessageRepository: messageRepository,
+		Mongo:            *mongo_client,
 	}, nil
 }
 
 func (app *App) Start() error {
 	router := gin.Default()
-	app.messageRouter.RegisterRoutes(&router.RouterGroup)
+	app.MessageRouter.RegisterRoutes(&router.RouterGroup)
 	router.Run(":" + app.config.Port)
 	return nil
 }

@@ -129,3 +129,11 @@ func (r MongoRepository) Search(query string, channelId *string, serverId *strin
 	}
 	return &messages, nil
 }
+
+func (r MongoRepository) MCreate(msgs []*message.Message) error {
+	_, err := r.messageCollection.InsertMany(context.Background(), msgs)
+	if err != nil {
+		return err
+	}
+	return nil
+}
