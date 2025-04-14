@@ -9,6 +9,7 @@ import (
 	"message/service"
 	"message/services/mongo_client"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,12 +39,15 @@ func InitApp(appConfig config.AppConfig) (*App, error) {
 		MessageService:    messageService,
 		MessageController: messageController,
 		MessageRepository: messageRepository,
-		Mongo:            *mongo_client,
+		Mongo:             *mongo_client,
 	}, nil
 }
 
 func (app *App) Start() error {
 	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:5173"},
+	}))
 	app.MessageRouter.RegisterRoutes(&router.RouterGroup)
 	router.Run(":" + app.config.Port)
 	return nil

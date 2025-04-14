@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"message/repository"
 	"message/repository/types"
 	"message/types/message"
 
@@ -102,7 +103,7 @@ func (r MongoRepository) GetByChannel(channelId string, page int, limit int) (*[
 	return &messages, nil
 }
 
-func (r MongoRepository) Search(query string, channelId *string, serverId *string, page int, limit int) (*[]message.Message, error) {
+func (r MongoRepository) Search(query string, channelId *string, serverId *string, page int, limit int) (*repository.PaginatedMessageSearch, error) {
 	var messages []message.Message
 	pagination_opts := options.Find().SetSkip(int64((page - 1) * limit)).SetLimit(int64(limit))
 	query_filter := bson.M{"$text": bson.M{"$search": query}}
@@ -116,18 +117,19 @@ func (r MongoRepository) Search(query string, channelId *string, serverId *strin
 	if err != nil {
 		return nil, err
 	}
-	for cursor.Next(context.Background()) {
-		var message message.Message
-		err := cursor.Decode(&message)
-		if err != nil {
-			return nil, err
-		}
-		messages = append(messages, message)
-	}
-	if err := cursor.Err(); err != nil {
+	if err := cursor.All(context.Background(), &messages); err != nil {
 		return nil, err
 	}
-	return &messages, nil
+	total, err := r.messageCollection.CountDocuments(context.Background(), query_filter)
+	if err != nil {
+		return nil, err
+	}
+	return &repository.PaginatedMessageSearch{
+		Page:    page,
+		Limit:   limit,
+		Total:   int(total),
+		Results: messages,
+	}, nil
 }
 
 func (r MongoRepository) MCreate(msgs []*message.Message) error {

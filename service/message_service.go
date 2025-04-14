@@ -44,6 +44,6 @@ func (s MessageService) GetByChannel(channelID string, page, limit int) (*[]mess
 	return s.repository.GetByChannel(channelID, page, limit)
 }
 
-func (s MessageService) Search(query string, channelId *string, serverID *string, page, limit int) (*[]message.Message, error) {
+func (s MessageService) Search(query string, channelId *string, serverID *string, page, limit int) (*repository.PaginatedMessageSearch, error) {
 	return s.repository.Search(query, channelId, serverID, page, limit)
 }

@@ -1,0 +1,12 @@
+entity user {}
+
+entity server {
+    relation member @user
+}
+
+entity channel {
+    relation dmUser @user
+    relation server @server
+
+    action view = dmUser or server.member
+}

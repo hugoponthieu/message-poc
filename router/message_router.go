@@ -17,11 +17,12 @@ func NewMessageRouter(controller controller.MessageController) MessageRouter {
 }
 
 func (r *MessageRouter) RegisterRoutes(router *gin.RouterGroup) {
-	router.GET("/messages/:id", r.controller.GetMessage)
+	messageRouter := router.Group("/messages")
+	messageRouter.GET("/:id", r.controller.GetMessage)
 	// Mget
-	router.POST("/messages/batch", r.controller.GetMessages)
-	router.POST("/messages", r.controller.CreateMessage)
-	router.PUT("/messages/:id", r.controller.UpdateMessage)
-	router.DELETE("/messages/:id", r.controller.DeleteMessage)
-	router.GET("/messages/search", r.controller.SearchMessages)
+	messageRouter.POST("/batch", r.controller.GetMessages)
+	messageRouter.POST("", r.controller.CreateMessage)
+	messageRouter.PUT("/:id", r.controller.UpdateMessage)
+	messageRouter.DELETE("/:id", r.controller.DeleteMessage)
+	messageRouter.GET("/search", r.controller.SearchMessages)
 }

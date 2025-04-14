@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: ext-authz
+  namespace: message # Specify the namespace here
+spec:
+  action: CUSTOM
+  provider:
+    name: sample-ext-authz-grpc
+  rules:
+    - to:
+      - operation:
+          paths: ["*"]
+          methods: ["*"] 

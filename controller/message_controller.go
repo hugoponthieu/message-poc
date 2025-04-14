@@ -175,7 +175,6 @@ func (c *MessageController) SearchMessages(ctx *gin.Context) {
 	serverID := ctx.Query("serverId")
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
-
 	var channelIDPtr, serverIDPtr *string
 	if channelID != "" {
 		channelIDPtr = &channelID
@@ -184,10 +183,10 @@ func (c *MessageController) SearchMessages(ctx *gin.Context) {
 		serverIDPtr = &serverID
 	}
 
-	messages, err := c.service.Search(query, channelIDPtr, serverIDPtr, page, limit)
+	messageSearchResult, err := c.service.Search(query, channelIDPtr, serverIDPtr, page, limit)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, messages)
+	ctx.JSON(http.StatusOK, messageSearchResult)
 }
