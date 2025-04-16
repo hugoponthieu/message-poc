@@ -3,15 +3,14 @@ package app
 import (
 	"message/config"
 	"message/controller"
+	"message/infrastructure"
+	"message/internal/api/http"
 	"message/repository"
 	"message/repository/mongo"
 	"message/router"
 	"message/service"
-	"message/services/mongo_client"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 )
+
 
 type App struct {
 	config            config.AppConfig
@@ -19,11 +18,12 @@ type App struct {
 	MessageService    service.MessageService
 	MessageController controller.MessageController
 	MessageRepository repository.MessageRepository
-	Mongo             mongo_client.MongoClient
+	Mongo             infrastructure.MongoClient
+	HttpServer        *http.Server
 }
 
 func InitApp(appConfig config.AppConfig) (*App, error) {
-	mongo_client, err := mongo_client.NewMongoClient(appConfig.MongoConfig)
+	mongo_client, err := infrastructure.NewMongoClient(appConfig.MongoConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -33,6 +33,7 @@ func InitApp(appConfig config.AppConfig) (*App, error) {
 	messageController := controller.NewMessageController(messageService)
 	messageRouter := router.NewMessageRouter(messageController)
 
+	httpServer := http.NewServer(appConfig.Port, appConfig.AllowOrigin)
 	return &App{
 		config:            appConfig,
 		MessageRouter:     messageRouter,
@@ -40,15 +41,13 @@ func InitApp(appConfig config.AppConfig) (*App, error) {
 		MessageController: messageController,
 		MessageRepository: messageRepository,
 		Mongo:             *mongo_client,
+		HttpServer:        httpServer,
 	}, nil
 }
 
 func (app *App) Start() error {
-	router := gin.Default()
-	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:5173"},
-	}))
-	app.MessageRouter.RegisterRoutes(&router.RouterGroup)
-	router.Run(":" + app.config.Port)
+	
+	app.MessageRouter.RegisterRoutes(&app.HttpServer.Engine.RouterGroup)
+	app.HttpServer.Start()
 	return nil
 }

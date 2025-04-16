@@ -73,6 +73,13 @@ func GetConfig() (*config.AppConfig, error) {
 				Usage:       "host to listen on",
 			},
 			&cli.StringFlag{
+				Name:        "allow-origin",
+				Sources:     cli.EnvVars("ALLOW_ORIGIN"),
+				Value:       "http://localhost:5173",
+				Destination: &config.AllowOrigin,
+				Usage:       "Origin to allow messages from",
+			},
+			&cli.StringFlag{
 				Name:        "port",
 				Sources:     cli.EnvVars("APP_PORT"),
 				Value:       "8080",
