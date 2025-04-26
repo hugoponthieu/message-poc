@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"log"
 	"message/app"
 	"message/config"
 	"message/seeder"
@@ -51,12 +52,16 @@ func GetConfig() (*config.AppConfig, error) {
 				Name:  "start",
 				Usage: "Start the message service",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					server, err := app.InitApp(*config)
+					log.Println("Init the application")
+					app, err := app.InitApp(*config)
 					if err != nil {
+						log.Fatal("Error when init the application:",err)
 						return err
 					}
-					err = server.Start()
+					log.Println("Starting the application...")
+					err = app.Start()
 					if err != nil {
+						log.Fatal("Error when starting the application:", err)
 						return err
 					}
 					return nil
@@ -114,6 +119,27 @@ func GetConfig() (*config.AppConfig, error) {
 				Value:       "message_db",
 				Destination: &config.MongoConfig.Database,
 				Usage:       "MongoDB database name",
+			},
+			&cli.StringFlag{
+				Name:        "oidc-base-url",
+				Sources:     cli.EnvVars("OIDC_BASE_URL"),
+				Value:       "http://localhost:8080",
+				Destination: &config.OidcBaseUrl,
+				Usage:       "OIDC base URL",
+			},
+			&cli.StringFlag{
+				Name:        "realm",
+				Sources:     cli.EnvVars("OIDC_REALM"),
+				Value:       "message",
+				Destination: &config.Realm,
+				Usage:       "OIDC realm",
+			},
+			&cli.StringFlag{
+				Name:        "client-id",
+				Sources:     cli.EnvVars("OIDC_CLIENT_ID"),
+				Value:       "message-client",
+				Destination: &config.ClientID,
+				Usage:       "OIDC client ID",
 			},
 		},
 	}

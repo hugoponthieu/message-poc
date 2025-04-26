@@ -5,4 +5,7 @@ type AppConfig struct {
 	Port     string
 	MongoConfig MongoConfig
 	AllowOrigin string
+	OidcBaseUrl string 
+	Realm string
+	ClientID string
 }
