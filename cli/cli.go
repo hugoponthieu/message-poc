@@ -55,7 +55,7 @@ func GetConfig() (*config.AppConfig, error) {
 					log.Println("Init the application")
 					app, err := app.InitApp(*config)
 					if err != nil {
-						log.Fatal("Error when init the application:",err)
+						log.Fatal("Error when init the application:", err)
 						return err
 					}
 					log.Println("Starting the application...")
@@ -133,13 +133,6 @@ func GetConfig() (*config.AppConfig, error) {
 				Value:       "message",
 				Destination: &config.Realm,
 				Usage:       "OIDC realm",
-			},
-			&cli.StringFlag{
-				Name:        "client-id",
-				Sources:     cli.EnvVars("OIDC_CLIENT_ID"),
-				Value:       "message-client",
-				Destination: &config.ClientID,
-				Usage:       "OIDC client ID",
 			},
 		},
 	}

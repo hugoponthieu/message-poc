@@ -35,6 +35,26 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          env:
+            - name: APP_HOST
+              value: "0.0.0.0"
+            - name: ALLOW_ORIGIN
+              value: {{ .Values.env.allowOrigin }}
+            - name: APP_PORT
+              value: {{ .Values.env.port | quote }}
+            - name: MONGO_HOST
+              value: {{ .Values.env.mongoHost }}
+            - name: MONGO_USERNAME
+              value: {{ .Values.env.mongoUsername }}
+            - name: MONGO_DATABASE
+              value: {{ .Values.env.mongoDatabase }}
+            - name: OIDC_BASE_URL
+              value: {{ .Values.env.oidcBaseUrl }}
+            - name: OIDC_REALM
+              value: {{ .Values.env.oidcRealm }}
+
+
+            
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

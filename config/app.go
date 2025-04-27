@@ -7,5 +7,4 @@ type AppConfig struct {
 	AllowOrigin string
 	OidcBaseUrl string 
 	Realm string
-	ClientID string
 }
