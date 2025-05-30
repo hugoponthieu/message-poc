@@ -1,0 +1,170 @@
+auth:
+  adminUser: messageuser
+  adminPassword: messageuser
+  annotations: {}
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: postgres
+    username: bn_keycloak
+    password: keycloak_password
+    database: bitnami_keycloak
+  architecture: standalone
+
+production: false
+
+adminRealm: "master"
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  pathType: ImplementationSpecific
+  controller: default
+  hostname: keycloak-poc.hponthieu.org
+  hostnameStrict: false
+  path: "{{ .Values.httpRelativePath }}"
+  servicePort: http
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: 'true'
+  tls: true
+  selfSigned: false
+
+adminIngress:
+  enabled: true
+  ingressClassName: traefik
+  pathType: ImplementationSpecific
+  controller: default
+  hostname: admin-keycloak-poc.hponthieu.org
+  path: "{{ .Values.httpRelativePath }}"
+  servicePort: http
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: 'true'
+  tls: true
+  selfSigned: false
+
+tls:
+  enabled: false
+  
+global:
+  imageRegistry: ""
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  defaultStorageClass: ""
+  storageClass: ""
+  ## Security parameters
+  ##
+  security:
+    ## @param global.security.allowInsecureImages Allows skipping image verification
+    allowInsecureImages: false
+  ## Compatibility adaptations for Kubernetes platforms
+  ##
+  compatibility:
+    ## Compatibility adaptations for Openshift
+    ##
+    openshift:
+      ## @param global.compatibility.openshift.adaptSecurityContext Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation)
+      ##
+      adaptSecurityContext: auto
+## @section Common parameters
+##
+
+clusterDomain: cluster.local
+image:
+  registry: docker.io
+  repository: bitnami/keycloak
+  tag: 26.2.4-debian-12-r0
+
+
+resourcesPreset: "large"
+
+
+service:
+  ## @param service.type Kubernetes service type
+  ##
+  type: ClusterIP
+  ## @param service.http.enabled Enable http port on service
+  ##
+  http:
+    enabled: true
+  ## @param service.ports.http Keycloak service HTTP port
+  ## @param service.ports.https Keycloak service HTTPS port
+  ##
+  ports:
+    http: 80
+    https: 443
+  ## @param service.nodePorts [object] Specify the nodePort values for the LoadBalancer and NodePort service types.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+  ##
+  nodePorts:
+    http: ""
+    https: ""
+  ## @param service.sessionAffinity Control where client requests go, to the same pod or round-robin
+  ## Values: ClientIP or None
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
+  ##
+  sessionAffinity: None
+  ## @param service.sessionAffinityConfig Additional settings for the sessionAffinity
+  ## sessionAffinityConfig:
+  ##   clientIP:
+  ##     timeoutSeconds: 300
+  ##
+  sessionAffinityConfig: {}
+  ## @param service.clusterIP Keycloak service clusterIP IP
+  ## e.g:
+  ## clusterIP: None
+  ##
+  clusterIP: ""
+  ## @param service.loadBalancerIP loadBalancerIP for the SuiteCRM Service (optional, cloud specific)
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+  ##
+  loadBalancerIP: ""
+  ## @param service.loadBalancerSourceRanges Address that are allowed when service is LoadBalancer
+  ## https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ## Example:
+  ## loadBalancerSourceRanges:
+  ##   - 10.10.10.0/24
+  ##
+  loadBalancerSourceRanges: []
+  ## @param service.externalTrafficPolicy Enable client source IP preservation
+  ## ref https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+  ##
+  externalTrafficPolicy: Cluster
+  ## @param service.annotations Additional custom annotations for Keycloak service
+  ##
+  annotations: {}
+  ## @param service.extraPorts Extra port to expose on Keycloak service
+  ##
+  extraPorts: []
+  # DEPRECATED service.extraHeadlessPorts will be removed in a future release, please use service.headless.extraPorts instead
+  ## @param service.extraHeadlessPorts Extra ports to expose on Keycloak headless service
+  ##
+  extraHeadlessPorts: []
+  ## Headless service properties
+  ##
+  headless:
+    ## @param service.headless.annotations Annotations for the headless service.
+    ##
+    annotations: {}
+    ## @param service.headless.extraPorts Extra ports to expose on Keycloak headless service
+    ##
+    extraPorts: []
+
+## Configuration for keycloak-config-cli
+## ref: https://github.com/adorsys/keycloak-config-cli
+##
+keycloakConfigCli:
+  ## @param keycloakConfigCli.enabled Whether to enable keycloak-config-cli job
+  ##
+  enabled: false
+
+
+readinessProbe:
+  enabled: true
